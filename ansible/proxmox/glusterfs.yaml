@@ -1,0 +1,74 @@
+---
+- name: Provision glusterfs on fedora
+  hosts: test-storage
+  become: yes
+  
+  vars:
+    ntfy_token: "{{ lookup('env', 'NTFY_AUTH') }}"
+
+  tasks:
+  - name: Create brick
+    file:
+      path: /data/brick1
+      state: directory
+      mode: '0755'
+      recurse: yes
+    
+  - name: Install glusterfs
+    ansible.builtin.dnf:
+      name: glusterfs-server
+      state: present
+    register: glusterfs_install
+
+  - name: Check if glusterfs is running
+    service:
+      name: glusterd
+      state: started
+      enabled: yes
+    register: glusterfs_service
+
+  - name: Reboot if service was not running
+    reboot:
+      msg: "rebooting the system"
+      connect_timeout: 3
+      reboot_timeout: 200
+      test_command: uptime
+    when: glusterfs_service.changed
+  
+  # add ansible_host which will be the IPs in the inventory alongside your host
+  - name: Update /etc/hosts file
+    lineinfile:
+      path: /etc/hosts
+      line: "{{ hostvars[item].ansible_host }} {{ item }}"
+      state: present
+    with_items: "{{ groups['test-storage'] }}"
+
+  - name: Allow all traffic from other glusterfs nodes
+    iptables:
+      chain: INPUT
+      protocol: all
+      source: "{{ item }}"
+      jump: ACCEPT
+    with_items: "{{ groups['test-storage'] }}"
+    when: item != inventory_hostname
+
+  - name: Probe volumes
+    command: gluster peer probe {{ item }}
+    with_items: "{{ groups['test-storage'] }}"
+    when: item != inventory_hostname
+
+  - name: Gluster peer status
+    command: gluster peer status
+    register: peer_status
+
+  - name: Send gluster peer status notification
+    uri:
+      url: "https://ntfy.hcrypt.net/install"
+      method: POST
+      body: "{{ peer_status.stdout }}"
+      headers:
+        Title: "Gluster Peer Status on {{ inventory_hostname }}"
+        Priority: "default"
+        Tags: "gluster,status"
+        Authorization: "Bearer {{ ntfy_token }}"
+      status_code: 200

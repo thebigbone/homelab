@@ -1,0 +1,119 @@
+---
+- name: Update Ubuntu and Fedora servers and send notifications
+  hosts: all
+  become: yes
+    #  strategy: free
+
+  vars:
+    ntfy_token: "{{ lookup('env', 'NTFY_AUTH') }}"
+    ansible_become_pass: "{{ lookup('env', 'SUDO_PASSWD') }}"
+
+  tasks:
+    - name: Gather OS facts
+      ansible.builtin.setup:
+        gather_subset: min
+
+    - name: Check if the host is Ubuntu
+      ansible.builtin.set_fact:
+        is_ubuntu: "{{ ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu' }}"
+
+    - name: Check if the host is Fedora
+      ansible.builtin.set_fact:
+        is_fedora: "{{ ansible_facts['distribution'] == 'Fedora' }}"
+
+    - name: Debug is_ubuntu value
+      ansible.builtin.debug:
+        var: is_ubuntu
+
+    - name: Debug is_fedora value
+      ansible.builtin.debug:
+        var: is_fedora
+
+    - name: Gather package facts before update
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Register package versions before update
+      ansible.builtin.set_fact:
+        packages_before: "{{ ansible_facts.packages }}"
+
+    - name: Update Ubuntu servers
+      when: is_ubuntu
+      block:
+        - name: Update apt cache
+          ansible.builtin.apt:
+            update_cache: yes
+
+        - name: Upgrade all packages
+          ansible.builtin.apt:
+            upgrade: dist
+
+        - name: Clean up unnecessary packages
+          ansible.builtin.apt:
+            autoremove: yes
+
+    - name: Update Fedora servers
+      when: is_fedora
+      block:
+        - name: Update all packages
+          ansible.builtin.dnf:
+            name: "*"
+            state: latest
+
+    - name: Gather package facts after update
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Register package versions after update
+      ansible.builtin.set_fact:
+        packages_after: "{{ ansible_facts.packages }}"
+
+    - name: Initialize version_changes
+      ansible.builtin.set_fact:
+        version_changes: []
+
+    - name: Compare package versions and register changes
+      ansible.builtin.set_fact:
+        version_changes: >-
+          {{
+            version_changes +
+            [
+              {
+                'package': item.key,
+                'version_before': item.value[0]['version'],
+                'version_after': packages_after[item.key][0]['version']
+              }
+            ]
+          }}
+      loop: "{{ packages_before | dict2items }}"
+      when: item.value[0]['version'] != packages_after[item.key][0]['version']
+
+    - name: Check if there are any version changes
+      ansible.builtin.set_fact:
+        has_upgrades: "{{ version_changes | length > 0 }}"
+
+    - name: Set notification tags based on upgrades
+      ansible.builtin.set_fact:
+        notification_tags: "{{ 'new-update' if has_upgrades else 'no-update' }}"
+
+    - name: Set notification message
+      ansible.builtin.set_fact:
+        notification_message: >-
+          {{
+            ('Upgrades available on ' + inventory_hostname + ':\n' + version_changes | to_nice_yaml)
+            if has_upgrades
+            else ('No upgrades on ' + inventory_hostname)
+          }}
+
+    - name: Send notification for updates
+      ansible.builtin.uri:
+        url: "https://ntfy.hcrypt.net/server-update"
+        method: POST
+        body: "{{ notification_message }}"
+        status_code: 200
+        headers:
+          Title: "Server Update"
+          Priority: "high"
+          X-Tags: "{{ notification_tags }} on {{ inventory_hostname }}"
+          Authorization: "Bearer {{ ntfy_token }}"
+

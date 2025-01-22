@@ -1,0 +1,102 @@
+---
+- name: Configure UFW and SSH
+  hosts: all
+  become: yes
+
+  vars:
+    new_user: "user"  
+
+  tasks:
+  - name: install ufw
+    apt:
+      name: ufw
+      state: present
+      update_cache: yes
+    register: ufw_install
+
+  - name: Set default policy to deny incoming traffic
+    ufw:
+      default: deny
+      direction: incoming
+
+  - name: Set default policy to allow outgoing traffic
+    ufw:
+      default: allow
+      direction: outgoing
+
+  - name: Allow UFW port 22
+    ufw:
+      rule: allow
+      port: 22
+      proto: tcp
+
+  - name: enable ufw
+    ufw:
+      state: enabled
+
+  - name: Reload ufw
+    ufw:
+      state: reloaded
+
+  - name: Reboot the machine with all defaults
+    ansible.builtin.reboot:
+    when: ufw_install.changed
+
+  - name: Create a new user
+    user:
+      name: "{{ new_user }}"
+      groups: sudo
+      append: yes
+      shell: /bin/bash
+      create_home: yes
+
+  - name: Disable password login for everyone
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^PasswordAuthentication'
+      line: 'PasswordAuthentication no'
+      state: present
+
+  - name: Disable root login
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^PermitRootLogin'
+      line: 'PermitRootLogin no'
+      state: present
+
+  - name: Disable X11 forwarding
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^X11Forwarding'
+      line: 'X11Forwarding no'
+      state: present
+
+  - name: Copy SSH key to authorized_keys
+    authorized_key:
+      user: "{{ new_user }}"
+      key: "{{ lookup('file', '~/.ssh/remote.pub') }}"
+      state: present
+
+  - name: restart ssh service
+    service:
+      name: sshd
+      state: restarted
+
+  - name: install fail2ban
+    apt:
+      name: fail2ban
+      state: present
+      update_cache: yes
+
+  - name: Copy jail.conf to remote host
+    copy:
+      src: jail.conf
+      dest: /etc/fail2ban/jail.d/jail.conf
+      mode: '0644'
+    become: yes  
+
+  - name: start fail2ban
+    service:
+      name: fail2ban
+      enabled: yes
+      state: started

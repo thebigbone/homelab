@@ -1,0 +1,93 @@
+---
+- name: Secure Proxmox Server
+  hosts: pve
+  become: yes
+
+  tasks:
+  - name: Install UFW
+    apt:
+      name: ufw
+      state: present
+
+  - name: Configure UFW
+    ufw:
+      rule: allow
+      port: "{{ item }}"
+    loop:
+      - 22
+      - 8006
+
+  - name: Enable UFW
+    ufw:
+      state: enabled
+
+  - name: Stop and disable nfs-client
+    service:
+      name: nfs-client.target
+      state: stopped
+      enabled: no
+
+  - name: Configure nfs-common
+    lineinfile:
+      path: /etc/default/nfs-common
+      regexp: '^NEED_STATD='
+      line: 'NEED_STATD=no'
+
+  - name: Disable RPC
+    service:
+      name: "{{ item }}"
+      state: stopped
+      enabled: no
+    loop:
+      - rpcbind.service
+      - rpcbind.socket
+      - rpc-statd-notify.service
+
+  - name: Disable postfix
+    service:
+      name: postfix.service
+      state: stopped
+      enabled: no
+
+  - name: Disable ceph
+    service:
+      name: "{{ item }}"
+      state: stopped
+      enabled: no
+    loop:
+      - ceph.target
+      - ceph-fuse.target
+
+  - name: Remove ceph configuration
+    file:
+      path: "{{ item }}"
+      state: absent
+    loop:
+      - /var/lib/ceph
+      - /etc/ceph
+
+  - name: Disable pve-cluster and corosync
+    service:
+      name: "{{ item }}"
+      state: stopped
+      enabled: no
+    loop:
+      - pve-cluster.service
+      - corosync.service
+
+  - name: Remove corosync configuration
+    file:
+      path: "{{ item }}"
+      state: absent
+    loop:
+      - /etc/corosync
+      - /etc/default/corosync
+
+  - name: Reboot the server
+    reboot:
+      msg: "Rebooting now for applying changes"
+      connect_timeout: 5
+      reboot_timeout: 300
+      pre_reboot_delay: 0
+      post_reboot_delay: 60
+      test_command: uptime
