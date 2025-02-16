@@ -1,6 +1,6 @@
 ---
 - name: Provision glusterfs on fedora
-  hosts: test-storage
+  hosts: storage
   become: yes
   
   vars:
@@ -41,7 +41,7 @@
       path: /etc/hosts
       line: "{{ hostvars[item].ansible_host }} {{ item }}"
       state: present
-    with_items: "{{ groups['test-storage'] }}"
+    with_items: "{{ groups['storage'] }}"
 
   - name: Allow all traffic from other glusterfs nodes
     iptables:
@@ -49,12 +49,12 @@
       protocol: all
       source: "{{ item }}"
       jump: ACCEPT
-    with_items: "{{ groups['test-storage'] }}"
+    with_items: "{{ groups['storage'] }}"
     when: item != inventory_hostname
 
   - name: Probe volumes
     command: gluster peer probe {{ item }}
-    with_items: "{{ groups['test-storage'] }}"
+    with_items: "{{ groups['storage'] }}"
     when: item != inventory_hostname
 
   - name: Gluster peer status
@@ -72,3 +72,10 @@
         Tags: "gluster,status"
         Authorization: "Bearer {{ ntfy_token }}"
       status_code: 200
+
+  - name: Create the brick directory
+    file:
+      path: /data/brick1/gv0
+      state: directory
+      mode: '0755'
+      recurse: yes

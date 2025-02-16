@@ -5,6 +5,8 @@
 
   vars:
     new_user: "user"  
+    new_password: "{{ lookup('env', 'NEW_PASSWD') }}" 
+    salt: "{{ lookup('env', 'SALT') }}"
 
   tasks:
   - name: install ufw
@@ -49,6 +51,7 @@
       append: yes
       shell: /bin/bash
       create_home: yes
+      password: "{{ new_password | password_hash('sha512', salt) }}"
 
   - name: Disable password login for everyone
     lineinfile:

@@ -1,0 +1,60 @@
+---
+- name: install incus on ubuntu 22.04
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: Download and show GPG key fingerprint using curl
+    command: curl -fsSL https://pkgs.zabbly.com/key.asc
+    changed_when: false
+    ignore_errors: yes
+
+  - name: Ensure the APT keyrings directory exists
+    file:
+      path: /etc/apt/keyrings
+      state: directory
+      mode: '0755'
+
+  - name: Save the key to /etc/apt/keyrings/zabbly.asc using curl
+    get_url:
+      url: https://pkgs.zabbly.com/key.asc
+      dest: /etc/apt/keyrings/zabbly.asc
+      mode: '0644'
+
+  - name: Add Zabbly stable repository via template
+    become: true
+    template:
+      src: ./templates/incus.j2
+      dest: /etc/apt/sources.list.d/zabbly-incus-stable.sources
+      mode: '0644'
+
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+    register: update_result
+
+  - name: Install Incus package
+    apt:
+      name: incus
+      state: present
+    when: update_result is succeeded
+
+  - name: Allow incoming traffic on incusbr0 without routing
+    community.general.ufw:
+      rule: allow
+      direction: in
+      interface: incusbr0
+
+  - name: Allow incoming routed traffic on incusbr0
+    community.general.ufw:
+      rule: allow
+      direction: in
+      interface: incusbr0
+      route: yes
+
+  - name: Allow outgoing routed traffic on incusbr0
+    community.general.ufw:
+      rule: allow
+      direction: out
+      interface: incusbr0
+      route: yes
