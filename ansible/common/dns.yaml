@@ -1,0 +1,72 @@
+---
+- name: Configure upstream DoH
+  hosts: all
+  become: yes
+  vars:
+    dns_server: "194.242.2.2#dns.mullvad.net"
+    resolved_conf_fedora: "/usr/lib/systemd/resolved.conf"
+    resolved_conf_ubuntu: "/etc/systemd/resolved.conf"
+
+  tasks:
+    - name: Enable systemd-resolved
+      systemd:
+        name: systemd-resolved
+        enabled: yes
+
+    - name: Configure resolved.conf for Fedora
+      block:
+        - name: Edit resolved.conf for Fedora
+          lineinfile:
+            path: "{{ resolved_conf_fedora }}"
+            state: present
+            insertafter: EOF
+            line: |
+              DNS={{ dns_server }}
+              DNSSEC=no
+              DNSOverTLS=yes
+              Domains=~.
+          when: ansible_facts['os_family'] == 'RedHat'
+
+        - name: Create symbolic link for resolv.conf on Fedora
+          file:
+            src: /run/systemd/resolve/stub-resolv.conf
+            dest: /etc/resolv.conf
+            state: link
+            force: yes
+          when: ansible_facts['os_family'] == 'RedHat'
+
+    - name: Configure resolved.conf for Ubuntu
+      block:
+        - name: Edit resolved.conf for Ubuntu
+          lineinfile:
+            path: "{{ resolved_conf_ubuntu }}"
+            state: present
+            insertafter: EOF
+            line: |
+              DNS={{ dns_server }}
+              DNSSEC=no
+              DNSOverTLS=yes
+              Domains=~.
+          when: ansible_facts['os_family'] == 'Debian'
+
+        - name: Create symbolic link for resolv.conf on Ubuntu
+          file:
+            src: /run/systemd/resolve/stub-resolv.conf
+            dest: /etc/resolv.conf
+            state: link
+            force: yes
+          when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Restart systemd-resolved
+      systemd:
+        name: systemd-resolved
+        state: restarted
+
+    - name: Verify DNS settings
+      command: resolvectl status
+      register: resolvectl_output
+
+    - name: Display DNS settings
+      debug:
+        var: resolvectl_output.stdout
+

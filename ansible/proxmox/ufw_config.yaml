@@ -1,0 +1,36 @@
+---
+- name: Install ufw
+  dnf:
+    name: ufw
+    state: present
+    update_cache: yes
+  register: ufw_install
+
+- name: Set default policy to deny incoming
+  ufw:
+    default: deny
+    direction: incoming
+
+- name: Set default policy to allow outgoing
+  ufw:
+    default: allow
+    direction: outgoing
+
+- name: Allow port 22
+  ufw:
+    rule: allow
+    port: 22
+    proto: tcp
+
+- name: Enable ufw
+  ufw:
+    state: enabled
+
+- name: Reload ufw
+  ufw:
+    state: reloaded
+
+- name: Reboot if ufw installed for first time
+  ansible.builtin.reboot:
+    when: ufw_install.changed
+

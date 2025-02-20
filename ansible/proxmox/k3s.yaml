@@ -1,0 +1,25 @@
+---
+- name: Provision k3s master and workers
+  hosts: k3s
+  become: yes
+
+  vars:
+    ntfy_token: "{{ lookup('env', 'NTFY_AUTH') }}"
+    master_token: "{{ lookup('env', 'K3S_MASTER') }}"
+
+  tasks:
+    - name: Bootstrap the K3s cluster on the initial master node
+      command: "curl -sfL https://get.k3s.io | sh -s - server --cluster-init --token {{ master_token }}"
+      when: "'master-01' in group_names"
+
+    - name: Wait for the initial master node to be ready
+      command: "kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get nodes"
+      register: result
+      until: "'Ready' in result.stdout"
+      retries: 10
+      delay: 10
+      when: "'master-01' in group_names"
+
+    - name: Install K3s on other master nodes
+      command: "curl -sfL https://get.k3s.io | K3S_TOKEN={{ master_token }} sh -s server --server https://{{ hostvars[initial_master]['ansible_host'] }}:6443"
+      when: group_names != master-01 and 'masters' in group_names
