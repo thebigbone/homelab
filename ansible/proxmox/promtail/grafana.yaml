@@ -1,0 +1,59 @@
+{
+  "uid": "loki-dashboard",
+  "title": "Loki Dashboard",
+  "rows": [
+    {
+      "title": "Logs",
+      "panels": [
+        {
+          "id": 1,
+          "title": "Logs",
+          "type": "logs",
+          "datasource": "loki",
+          "targets": [
+            {
+              "expr": "{instance=\"$instance\", env=\"$env\", job=\"$job\"}",
+              "legendFormat": "{{instance}}",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "showLabels": true,
+            "scrollToBottom": true
+          },
+          "gridPos": {
+            "h": 20,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "instance",
+        "query": "label_values(instance)",
+        "multi": false,
+        "includeAll": true
+      },
+      {
+        "name": "env",
+        "query": "label_values({instance=\"$instance\"}, env)",
+        "multi": false,
+        "includeAll": true,
+        "dependencies": ["instance"]
+      },
+      {
+        "name": "job",
+        "query": "label_values({instance=\"$instance\", env=\"$env\"}, job)",
+        "multi": false,
+        "includeAll": false,
+        "dependencies": ["instance", "env"]
+      }
+    ]
+  }
+}
+

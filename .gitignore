@@ -1,2 +1,8 @@
 ansible/inventory
-terraform/
+k3s/*/secret.yaml
+terraform/*/*/*.tfvars
+terraform/*/*/*.tfstate
+terraform/*/*/*.terraform
+terraform/*/*/*.terraform.lock.hcl
+terraform/.terraform
+terraform/*/.terraform

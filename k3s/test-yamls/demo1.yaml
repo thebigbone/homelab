@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: librespeed
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      run: librespeed
+  template:
+    metadata:
+      labels:
+        run: librespeed
+    spec:
+      containers:
+      - name: librespeed 
+        image: lscr.io/linuxserver/librespeed
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: librespeed
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    run: librespeed
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-librespeed
+spec:
+  rules:
+  - host: librespeed.homelab.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: librespeed
+            port:
+              number: 80
+  ingressClassName: nginx

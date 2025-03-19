@@ -25,7 +25,7 @@
               DNSSEC=no
               DNSOverTLS=yes
               Domains=~.
-          when: ansible_facts['os_family'] == 'RedHat'
+              when: ansible_facts['os_family'] == 'RedHat'
 
         - name: Create symbolic link for resolv.conf on Fedora
           file:
@@ -33,7 +33,7 @@
             dest: /etc/resolv.conf
             state: link
             force: yes
-          when: ansible_facts['os_family'] == 'RedHat'
+            when: ansible_facts['os_family'] == 'RedHat'
 
     - name: Configure resolved.conf for Ubuntu
       block:

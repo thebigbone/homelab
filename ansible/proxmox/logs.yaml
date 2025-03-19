@@ -1,0 +1,77 @@
+---
+- name: Install and configure Promtail
+  hosts: all
+  become: yes
+  tasks:
+    - name: Download Promtail
+      get_url:
+        url: https://github.com/grafana/loki/releases/download/v3.4.2/promtail-linux-amd64.zip
+        dest: /tmp/promtail-linux-amd64.zip
+
+    - name: Install unzip
+      apt:
+        name: unzip
+        state: present
+      when: ansible_os_family == 'Debian'
+
+    - name: Extract Promtail
+      unarchive:
+        src: /tmp/promtail-linux-amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Remove zip file
+      file:
+        path: /tmp/promtail-linux-amd64.zip
+        state: absent
+
+    - name: Rename Promtail binary
+      command: mv /usr/local/bin/promtail-linux-amd64 /usr/local/bin/promtail
+
+    - name: Ensure /usr/local/bin is in PATH
+      lineinfile:
+        path: /etc/environment
+        state: present
+        regexp: '^PATH='
+        line: 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"'
+
+    - name: Source /etc/environment
+      shell: source /etc/environment
+      args:
+        executable: /bin/bash
+
+    - name: Create Promtail config directory
+      file:
+        path: /etc/promtail
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Check if systemd is present
+      command: cat /proc/1/comm
+      register: init_system
+      changed_when: false
+      ignore_errors: true
+
+    - name: Set fact for systemd presence
+      set_fact:
+        is_systemd: "{{ 'systemd' in init_system.stdout }}"
+
+    - name: Copy Promtail config for systemd
+      template:
+        src: ./promtail/systemd.yaml.j2
+        dest: /etc/promtail/promtail-config.yaml
+        owner: root
+        group: root
+        mode: '0644'
+      when: is_systemd
+
+    - name: Copy Promtail config for non-systemd systems
+      template:
+        src: ./promtail/syslog.yaml.j2
+        dest: /etc/promtail/promtail-config.yaml
+        owner: root
+        group: root
+        mode: '0644'
+      when: not is_systemd
