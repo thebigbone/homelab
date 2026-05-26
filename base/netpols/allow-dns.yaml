@@ -3,9 +3,6 @@ kind: NetworkPolicy
 metadata:
   name: allow-dns
 spec:
-  podSelector:
-    matchLabels:
-      gatus: true
   policyTypes:
   - Egress
   egress:
