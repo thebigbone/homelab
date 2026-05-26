@@ -12,6 +12,3 @@ resources:
   - ../../netpols/deny-by-default-egress.yaml
   - ../../netpols/deny-by-default-ingress.yaml
   - allow-dns-gatus.yaml
-
-commonLabels:
-  app.kubernetes.io/name: gatus
