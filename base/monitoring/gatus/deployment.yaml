@@ -55,12 +55,13 @@ spec:
           runAsUser: 1000
           runAsGroup: 1000
           allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
           capabilities:
-            drop:
-              - ALL
             add:
               - "NET_BIND_SERVICE"
               - "SYS_TIME"
+            drop:
+              - ALL
         volumeMounts:
           - mountPath: /config
             name: gatus-config

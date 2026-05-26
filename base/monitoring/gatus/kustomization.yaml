@@ -9,6 +9,10 @@ resources:
   - config.yaml
   - sa.yaml
   - namespace.yaml
+  - ../../netpol/deny-by-default-egress.yaml
+  - ../../netpol/deny-by-default-ingress.yaml
+  - allow-ext4-egress.yaml
 
 commonLabels:
   app.kubernetes.io/name: gatus
+  gatus: true
