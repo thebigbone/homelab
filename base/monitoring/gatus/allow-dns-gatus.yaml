@@ -3,6 +3,9 @@ kind: NetworkPolicy
 metadata:
   name: allow-dns
 spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: gatus
   policyTypes:
   - Egress
   egress:

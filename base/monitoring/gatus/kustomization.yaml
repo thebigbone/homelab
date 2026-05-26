@@ -11,18 +11,7 @@ resources:
   - namespace.yaml
   - ../../netpols/deny-by-default-egress.yaml
   - ../../netpols/deny-by-default-ingress.yaml
-  - ../../netpols/allow-dns.yaml
-
-patches:
-  - target:
-      kind: NetworkPolicy
-      name: allow-dns
-    patch: |-
-      - op: add
-        path: /spec/podSelector
-        value:
-          matchLabels:
-            app.kubernetes.io/name: gatus
+  - allow-dns-gatus.yaml
 
 commonLabels:
   app.kubernetes.io/name: gatus
