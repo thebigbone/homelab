@@ -11,7 +11,7 @@ spec:
     namespace: envoy-gateway-system
   interval: 5m
   install:
-    crds: CreateReplace
+    crds: Create
   upgrade:
     crds: CreateReplace
   postRenderers:
