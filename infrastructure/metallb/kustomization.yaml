@@ -5,6 +5,4 @@ namespace: metallb-system
 
 resources:
   - release.yaml
-  - pool.yaml
-  - l2.yaml
   - namespace.yaml
