@@ -14,3 +14,14 @@ spec:
     crds: CreateReplace
   upgrade:
     crds: CreateReplace
+postRenderers:
+  - kustomize:
+      patches:
+        - target:
+            version: v1
+            kind: Deployment
+            name: envoy-gateway
+          patch: |
+            - op: add
+              path: /spec/template/spec/runtimeClassName
+              value: gvisor
