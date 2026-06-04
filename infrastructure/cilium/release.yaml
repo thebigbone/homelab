@@ -1,0 +1,53 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cilium
+  namespace: kube-system
+spec:
+  releaseName: cilium
+  chart:
+    spec:
+      chart: cilium
+      sourceRef:
+        kind: HelmRepository
+        name: cilium-charts
+        namespace: kube-system
+      version: 1.19.2
+  interval: 5m
+  install:
+    crds: Create
+  upgrade:
+    crds: CreateReplace
+  values:
+  valuesFrom:
+    - kind: ConfigMap
+      name: cilium-values
+      valuesKey: values.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cilium-values
+  namespace: kube-system
+data:
+  values.yaml: |
+    k8sServiceHost: 192.168.0.154
+    k8sServicePort: 6443
+    kubeProxyReplacement: true
+    hubble:
+      enabled: true
+      metrics:
+        enabled:
+        - dns:query
+        - drop
+        - tcp
+        - flow
+        - icmp
+        - http
+      relay:
+        enabled: true
+    encryption:
+      enabled: true
+      type: wireguard
+      wireguard:
+        userspaceFallback: false

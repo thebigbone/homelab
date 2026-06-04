@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ingress-nginx.yaml
   - csi-driver-nfs.yaml
   - metallb.yaml
   - envoy-gateway.yaml
+  - cilium.yaml
