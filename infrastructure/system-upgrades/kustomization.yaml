@@ -5,3 +5,4 @@ namespace: system-upgrade
 resources:
   - crd.yaml
   - system-upgrade-controller.yaml
+  - plan.yaml
