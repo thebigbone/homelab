@@ -12,6 +12,7 @@ spec:
         kind: HelmRepository
         name: metallb
         namespace: metallb-system
+      # renovate: datasource=helm depName=metallb registryUrl=https://metallb.github.io/metallb
       version: 0.15.3
   interval: 5m
   install:

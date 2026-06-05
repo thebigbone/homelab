@@ -14,7 +14,6 @@ spec:
       labels:
         app.kubernetes.io/component: gatus
     spec:
-      runtimeClassName: gvisor
       serviceAccountName: gatus
       terminationGracePeriodSeconds: 5
       containers:

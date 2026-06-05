@@ -12,6 +12,7 @@ spec:
         kind: HelmRepository
         name: cilium-charts
         namespace: kube-system
+      # renovate: datasource=helm depName=cilium registryUrl=https://helm.cilium.io/
       version: 1.19.2
   interval: 5m
   install:

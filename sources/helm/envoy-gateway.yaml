@@ -7,4 +7,5 @@ spec:
   interval: 60m0s
   url: oci://docker.io/envoyproxy/gateway-helm
   ref:
+    # renovate: datasource=helm depName=envoyproxy/gateway-helm registryUrl=https://envoyproxy.github.io/gateway
     tag: v1.8.0

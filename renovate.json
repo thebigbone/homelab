@@ -1,3 +1,21 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json"
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["\\.yaml$"],
+      "matchStrings": [
+        "# renovate:\\s+datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: registryUrl=(?<registryUrl>[^\\s]+?))?(?: extractVersion=(?<extractVersion>.+?))?\\s+\\S+?: \"?(?<currentValue>.+?)@?(?<currentDigest>sha256:[a-f0-9]+)?\"?\\s"
+      ]
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["\\.yaml$"],
+      "matchStrings": [
+        "# renovate:\\n\\s+(?:\\S*)image: \"?'?(?<depName>[^:\\s]+?):(?<currentValue>[^\"]*?)@?(?<currentDigest>sha256:[a-f0-9]+)?\"?'?\\s"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ]
 }
