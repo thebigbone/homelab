@@ -1,0 +1,8 @@
+# =============== top level system-upgrade ks ===============
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: system-upgrade
+resources:
+  - ../../comet/system-upgrades/crd.yaml
+  - ../../comet/system-upgrades/system-upgrade-controller.yaml
+  - plan.yaml

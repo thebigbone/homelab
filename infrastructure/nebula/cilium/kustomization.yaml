@@ -4,4 +4,5 @@ kind: Kustomization
 namespace: kube-system
 
 resources:
-  - release.yaml
+  - config.yaml
+  - ../../comet/cilium/release.yaml

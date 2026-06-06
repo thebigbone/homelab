@@ -1,0 +1,11 @@
+# =============== top level nfs ks ===============
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kube-system
+
+resources:
+  - ../../comet/storage/release.yaml
+  - storageclass.yaml
+
+commonLabels:
+  app.kubernetes.io/name: nfs-csi

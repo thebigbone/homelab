@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gatus
+data:
+  config.yaml: |
+    metrics: true
+    endpoints:
+      - name: git
+        url: https://git.ext4.xyz
+        interval: 5m
+        conditions:
+          - "[STATUS] == 200"
+          - "[BODY].status == UP"
+
+      - name: jellyfin
+        url: https://jelly.ext4.xyz
+        interval: 5m
+        conditions:
+          - "[STATUS] == 200"
+          - "[BODY].status == UP"

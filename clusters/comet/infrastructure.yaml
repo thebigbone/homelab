@@ -1,4 +1,4 @@
-# =============== point to base/infrastructure ===============
+# =============== point to infrastructure/comet ===============
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -11,6 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure
+  path: ./infrastructure/comet
   prune: true
   wait: true
