@@ -9,8 +9,8 @@ resources:
   - config.yaml
   - sa.yaml
   - namespace.yaml
-  - ../../netpols/deny-by-default-egress.yaml
-  - ../../netpols/deny-by-default-ingress.yaml
+  - ../../../../netpols/deny-by-default-egress.yaml
+  - ../../../../netpols/deny-by-default-ingress.yaml
   - allow-dns-gatus.yaml
 
 components:
