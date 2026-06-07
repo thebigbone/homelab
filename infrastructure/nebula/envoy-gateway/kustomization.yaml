@@ -9,4 +9,5 @@ resources:
   - ../../comet/envoy-gateway/gatewayclass.yaml
   - ../../comet/envoy-gateway/gateway.yaml
   - ../../comet/envoy-gateway/clienttrafficpolicy.yaml
+  - ../../comet/envoy-gateway/envoyproxy.yaml
   - ./routes
