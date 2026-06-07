@@ -12,6 +12,7 @@ resources:
   - ../../../../netpols/deny-by-default-egress.yaml
   - ../../../../netpols/deny-by-default-ingress.yaml
   - allow-dns-gatus.yaml
+  - ./routes
 
 components:
   - ../../../../shared/components/gvisor

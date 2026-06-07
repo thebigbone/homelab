@@ -9,4 +9,3 @@ resources:
   - gatewayclass.yaml
   - gateway.yaml
   - clienttrafficpolicy.yaml
-  - ./routes
