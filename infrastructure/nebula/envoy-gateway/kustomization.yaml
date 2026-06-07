@@ -6,3 +6,7 @@ namespace: envoy-gateway-system
 resources:
   - ../../comet/envoy-gateway/namespace.yaml
   - ../../comet/envoy-gateway/release.yaml
+  - ../../comet/envoy-gateway/gatewayclass.yaml
+  - ../../comet/envoy-gateway/gateway.yaml
+  - ../../comet/envoy-gateway/clienttrafficpolicy.yaml
+  - ./routes

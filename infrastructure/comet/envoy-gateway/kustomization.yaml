@@ -6,3 +6,7 @@ namespace: envoy-gateway-system
 resources:
   - release.yaml
   - namespace.yaml
+  - gatewayclass.yaml
+  - gateway.yaml
+  - clienttrafficpolicy.yaml
+  - ./routes
