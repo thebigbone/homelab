@@ -9,9 +9,9 @@ resources:
   - ../../../comet/monitoring/gatus/config.yaml
   - ../../../comet/monitoring/gatus/sa.yaml
   - ../../../comet/monitoring/gatus/namespace.yaml
-  - ./netpols/deny-by-default-egress.yaml
-  - ./netpols/deny-by-default-ingress.yaml
+  - ../../../../netpols/deny-by-default-egress.yaml
+  - ../../../../netpols/deny-by-default-ingress.yaml
   - ../../../comet/monitoring/gatus/allow-dns-gatus.yaml
 
 components:
-  - ./shared/components/gvisor
+  - ../../../../shared/components/gvisor
