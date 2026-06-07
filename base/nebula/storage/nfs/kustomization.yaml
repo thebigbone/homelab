@@ -4,8 +4,19 @@ kind: Kustomization
 namespace: kube-system
 
 resources:
-  - ../../comet/storage/release.yaml
-  - storageclass.yaml
+  - ../../../comet/storage/release.yaml
+  - ../../../comet/storage/storageclass.yaml
 
 commonLabels:
   app.kubernetes.io/name: nfs-csi
+
+patches:
+  - target:
+      group: storage.k8s.io
+      version: v1
+      kind: StorageClass
+      name: nfs-csi
+    patch: |-
+      - op: replace
+        path: /parameters/server
+        value: 100.64.0.3
