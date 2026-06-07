@@ -4,8 +4,8 @@ kind: Kustomization
 namespace: kube-system
 
 resources:
-  - ../../../comet/storage/release.yaml
-  - ../../../comet/storage/storageclass.yaml
+  - ../../../comet/storage/nfs/release.yaml
+  - ../../../comet/storage/nfs/storageclass.yaml
 
 commonLabels:
   app.kubernetes.io/name: nfs-csi
