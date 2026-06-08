@@ -9,7 +9,6 @@ resources:
   - ../../../comet/monitoring/gatus/config.yaml
   - ../../../comet/monitoring/gatus/sa.yaml
   - ../../../comet/monitoring/gatus/namespace.yaml
-  - ../../../../netpols/deny-by-default-egress.yaml
   - ../../../../netpols/deny-by-default-ingress.yaml
   - ../../../../netpols/allow-envoy-ingress.yaml
   - ../../../comet/monitoring/gatus/allow-dns-gatus.yaml
