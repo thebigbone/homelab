@@ -11,6 +11,7 @@ resources:
   - namespace.yaml
   - ../../../../netpols/deny-by-default-ingress.yaml
   - ../../../../netpols/allow-envoy-ingress.yaml
+  - allow-egress-internet.yaml
   - allow-dns-gatus.yaml
   - ./routes
 

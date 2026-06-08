@@ -11,11 +11,4 @@ data:
         interval: 5m
         conditions:
           - "[STATUS] == 200"
-          - "[BODY].status == UP"
-
-      - name: jellyfin
-        url: https://jelly.ext4.xyz
-        interval: 5m
-        conditions:
-          - "[STATUS] == 200"
-          - "[BODY].status == UP"
+          - "[CONNECTED] == true"

@@ -12,6 +12,7 @@ resources:
   - ../../../../netpols/deny-by-default-ingress.yaml
   - ../../../../netpols/allow-envoy-ingress.yaml
   - ../../../comet/monitoring/gatus/allow-dns-gatus.yaml
+  - ../../../comet/monitoring/gatus/allow-egress-internet.yaml
   - ./routes
 
 components:
