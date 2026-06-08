@@ -10,3 +10,18 @@ resources:
   - ../../comet/envoy-gateway/gateway.yaml
   - ../../comet/envoy-gateway/clienttrafficpolicy.yaml
   - ../../comet/envoy-gateway/envoyproxy.yaml
+
+patches:
+  - target:
+      group: gateway.networking.k8s.io
+      version: v1
+      kind: Gateway
+      name: envoy-gateway
+    patch: |-
+      - op: add
+        path: /spec/addresses
+        value:
+          - type: IPAddress
+            value: "100.64.0.1"
+          - type: IPAddress
+            value: "100.64.0.2"
