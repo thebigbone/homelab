@@ -9,7 +9,7 @@ spec:
       name: envoy-gateway
       namespace: envoy-gateway-system
   hostnames:
-    - "gatus.ext4.xyz"
+    - "uptime.ext4.xyz"
   rules:
     - backendRefs:
         - name: gatus
