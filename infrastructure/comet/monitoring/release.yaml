@@ -96,12 +96,16 @@ data:
         darwin:
           enabled: false
     prometheusOperator:
+      tlsProxy:
+        enabled: false
       enabled: true
       networkPolicy:
         enabled: true
       admissionWebhooks:
         failurePolicy: Fail
-        enabled: true
+        enabled: false
+        patch:
+          enabled: false
       service:
         type: ClusterIP
       resources:
