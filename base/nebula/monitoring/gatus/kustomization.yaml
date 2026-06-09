@@ -27,4 +27,4 @@ patches:
     patch: |-
       - op: replace
         path: /spec/hostnames/0
-        value: "gatus.ext4.xyz"
+        value: "uptime.ext4.xyz"
