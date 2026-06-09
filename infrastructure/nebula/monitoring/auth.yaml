@@ -1,0 +1,35 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: grafana-oidc
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: grafana-route
+  oidc:
+    provider:
+      issuer: "https://id.ext4.xyz"
+    clientID: "35ea1a5d-6d91-4618-851b-727cc910f887"
+    clientSecret:
+      name: pocket-oidc
+    redirectURL: "https://grafana.ext4.xyz/oauth2/callback"
+    logoutPath: "/logout"
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: prometheus-oidc
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: prometheus-route
+  oidc:
+    provider:
+      issuer: "https://id.ext4.xyz"
+    clientID: "35ea1a5d-6d91-4618-851b-727cc910f887"
+    clientSecret:
+      name: pocket-oidc
+    redirectURL: "https://prometheus.ext4.xyz/oauth2/callback"
+    logoutPath: "/logout"

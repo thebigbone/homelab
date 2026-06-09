@@ -1,0 +1,20 @@
+# =============== top level monitoring-system ks ===============
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring-system
+
+resources:
+  - ../../comet/monitoring/release.yaml
+  - ../../comet/monitoring/namespace.yaml
+  - ./routes
+  - auth.yaml
+
+configMapGenerator:
+  - name: monitoring-grafana-dashboards
+    files:
+      - ../../comet/monitoring/dashboards/k8s-views-global.json
+      - ../../comet/monitoring/dashboards/k8s-views-nodes.json
+      - ../../comet/monitoring/dashboards/k8s-views-pods.json
+    options:
+      labels:
+        grafana_dashboard: "1"
