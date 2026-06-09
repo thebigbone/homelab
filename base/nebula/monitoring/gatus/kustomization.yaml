@@ -13,8 +13,18 @@ resources:
   - ../../../../netpols/allow-envoy-ingress.yaml
   - ../../../comet/monitoring/gatus/allow-dns-gatus.yaml
   - ../../../comet/monitoring/gatus/allow-egress-internet.yaml
-  - ../../../comet/monitoring/gatus/routes/securitypolicy.yaml
-  - ./routes
+  - ../../../comet/monitoring/gatus/routes
 
 components:
   - ../../../../shared/components/gvisor
+
+patches:
+  - target:
+      group: gateway.networking.k8s.io
+      version: v1
+      kind: HTTPRoute
+      name: gatus-route
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "gatus.ext4.xyz"
