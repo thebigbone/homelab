@@ -4,9 +4,7 @@ namespace: auth
 
 resources:
   - namespace.yaml
-  - pvc.yaml
   - sa.yaml
-  - secret.yaml
   - deployment.yaml
   - service.yaml
   - ./routes
