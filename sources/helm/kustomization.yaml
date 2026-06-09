@@ -5,3 +5,4 @@ resources:
   - metallb.yaml
   - envoy-gateway.yaml
   - cilium.yaml
+  - prometheus-community.yaml

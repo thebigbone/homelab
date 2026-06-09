@@ -1,0 +1,159 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus
+  namespace: monitoring-system
+spec:
+  releaseName: kube-prometheus-stack
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: monitoring-system
+      version: 81.6.9
+  interval: 60m
+  timeout: 10m
+  install:
+    remediation:
+      retries: 5
+    crds: Create
+  upgrade:
+    remediation:
+      retries: 5
+    crds: CreateReplace
+  valuesFrom:
+    - kind: ConfigMap
+      name: kube-prometheus-base-values
+      valuesKey: values.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-prometheus-base-values
+  namespace: monitoring-system
+  labels:
+    reconcile.fluxcd.io/watch: Enabled
+data:
+  values.yaml: |
+    alertmanager:
+      alertmanagerSpec:
+        replicas: 1
+        retention: 120h
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: nfs-csi
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 5Gi
+
+        resources:
+         requests:
+           cpu: 20m
+           memory: 400Mi
+        securityContext:
+          runAsGroup: 2000
+          runAsNonRoot: true
+          runAsUser: 1000
+          fsGroup: 2000
+    grafana:
+      persistence:
+         enabled: true
+         type: sts
+         storageClassName: nfs-csi
+         accessModes:
+           - ReadWriteOnce
+         size: 20Gi
+         finalizers:
+           - kubernetes.io/pvc-protection
+
+      enabled: true
+      adminPassword: kube-grafana
+      defaultDashboardsEditable: false
+      defaultDashboardsTimezone: browser
+      ingress:
+        enabled: false
+      sidecar:
+        dashboards:
+          enabled: true
+          searchNamespace: ALL
+        datasources:
+          enabled: true
+          defaultDatasourceEnabled: true
+          searchNamespace: ALL
+    kube-state-metrics:
+      namespaceOverride: ""
+      rbac:
+        create: true
+      podSecurityPolicy:
+        enabled: false
+    nodeExporter:
+      enabled: true
+      operatingSystems:
+        darwin:
+          enabled: false
+    prometheusOperator:
+      enabled: true
+      networkPolicy:
+        enabled: true
+      admissionWebhooks:
+        failurePolicy: Fail
+        enabled: true
+      service:
+        type: ClusterIP
+      resources:
+       limits:
+         cpu: 500m
+         memory: 512Mi
+       requests:
+         cpu: 100m
+         memory: 256Mi
+      securityContext:
+        fsGroup: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+    prometheus:
+      enabled: true
+      service:
+        type: ClusterIP
+      prometheusSpec:
+        ruleNamespaceSelector: {}
+        ruleSelectorNilUsesHelmValues: false
+        ruleSelector: {}
+        serviceMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelector: {}
+        serviceMonitorNamespaceSelector: {}
+        podMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelector: {}
+        podMonitorNamespaceSelector: {}
+        probeSelectorNilUsesHelmValues: false
+        probeSelector: {}
+        probeNamespaceSelector: {}
+        retention: 15d
+        retentionSize: 15GB
+        walCompression: false
+        paused: false
+        replicas: 1
+        resources:
+          requests:
+            cpu: 800m
+            memory: 2Gi
+          limits:
+            memory: 4Gi
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: nfs-csi
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 25Gi
+        securityContext:
+          runAsGroup: 2000
+          runAsNonRoot: true
+          runAsUser: 1000
+          fsGroup: 2000
