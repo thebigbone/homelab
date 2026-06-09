@@ -6,3 +6,15 @@ namespace: monitoring-system
 resources:
   - release.yaml
   - namespace.yaml
+  - ./routes
+
+configMapGenerator:
+  - name: monitoring-grafana-dashboards
+    files:
+      - ./dashboards/k8s-views-global.json
+      - ./dashboards/k8s-views-nodes.json
+      - ./dashboards/k8s-views-pods.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+
