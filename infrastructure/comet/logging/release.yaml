@@ -41,3 +41,4 @@ data:
       persistentVolume:
         enabled: true
         existingClaim: "vlstorage"
+      replicaCount: 1
