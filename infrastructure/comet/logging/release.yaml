@@ -37,10 +37,10 @@ metadata:
     reconcile.fluxcd.io/watch: Enabled
 data:
   values.yaml: |
-    vmauth:
-      enabled: true
     vlstorage:
       persistentVolume:
         enabled: true
         existingClaim: "vlstorage"
       replicaCount: 1
+    vmauth:
+      enabled: true
