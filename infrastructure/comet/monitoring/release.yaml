@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: prometheus-community
         namespace: monitoring-system
-      version: 81.6.9
+      version: 86.2.2
   interval: 60m
   timeout: 10m
   install:

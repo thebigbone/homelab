@@ -6,3 +6,4 @@ resources:
   - envoy-gateway.yaml
   - cilium.yaml
   - prometheus-community.yaml
+  - victoriametrics.yaml
