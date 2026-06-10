@@ -4,9 +4,6 @@ kind: Kustomization
 namespace: logging-system
 
 resources:
-  - ../../comet/logging/namespace.yaml
-  - ../../comet/logging/release.yaml
-  - ../../comet/logging/vlstorage.yaml
-  - ../../comet/logging/collector.yaml
+  - ../../comet/logging
   - auth.yaml
   - ./routes
