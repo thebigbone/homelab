@@ -38,7 +38,7 @@ metadata:
 data:
   values.yaml: |
     remoteWrite:
-      - http://logging-stack-victoria-logs-cluster-vmauth:8427
+      - url: http://logging-stack-victoria-logs-cluster-vmauth:8427
     collector:
       includePodLabels: true
       includePodAnnotations: false
