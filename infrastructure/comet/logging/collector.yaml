@@ -7,7 +7,7 @@ spec:
   releaseName: logging-stack
   chart:
     spec:
-      chart: victoria-logs-cluster
+      chart: victoria-logs-collector
       sourceRef:
         kind: HelmRepository
         name: victoriametrics
@@ -25,22 +25,22 @@ spec:
     crds: CreateReplace
   valuesFrom:
     - kind: ConfigMap
-      name: logging-base-values
+      name: collector-base-values
       valuesKey: values.yaml
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: logging-base-values
+  name: collector-base-values
   namespace: logging-system
   labels:
     reconcile.fluxcd.io/watch: Enabled
 data:
   values.yaml: |
-    vmauth:
-      enabled: true
-    vlstorage:
-      persistentVolume:
-        enabled: true
-        existingClaim: "vlstorage"
-      replicaCount: 1
+    remoteWrite:
+      - http://logging-stack-victoria-logs-cluster-vmauth:8427
+    collector:
+      includePodLabels: true
+      includePodAnnotations: false
+      includeNodeLabels: false
+      includeNodeAnnotations: false

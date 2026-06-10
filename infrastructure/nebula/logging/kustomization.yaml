@@ -7,5 +7,6 @@ resources:
   - ../../comet/logging/namespace.yaml
   - ../../comet/logging/release.yaml
   - ../../comet/logging/vlstorage.yaml
+  - ../../comet/logging/collector.yaml
   - auth.yaml
   - ./routes
