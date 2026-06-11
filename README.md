@@ -1,5 +1,5 @@
 <div align="center">
-#### homelab infra (work-in-progress)
+<h3>homelab infra (work-in-progress)</h3>
 
 Powered by Flux, Kubernetes, Cilium, Talos, OpenBSD and Linux.
 </div>
@@ -87,7 +87,7 @@ This cluster serves everything exposed on \*.ext4.xyz domain. All of the externa
 
 ### GitOps
 
-Flux does all the heavy lifting of syncing the resources from git repo and runs reconcilation loop on every commit. It's a fantastic way to have declaritive infrastructure. Renovate bot handles all the dependency updates and oens up a PR when it detects new versions. 
+Flux does all the heavy lifting of syncing the resources from git repo and runs reconcilation loop on every commit. It's a fantastic way to have declaritive infrastructure. Renovate bot handles all the dependency updates and opens up a PR when it detects new versions. 
 
 ## Core Components
 
