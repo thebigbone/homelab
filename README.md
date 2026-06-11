@@ -1,6 +1,6 @@
-# homelab k8 (work-in-progress)
+## homelab infra (work-in-progress)
 
-Powered by Flux, Kubernetes, Cilium, Talos, OpenBSD and Linux.
+### Powered by Flux, Kubernetes, Cilium, Talos, OpenBSD and Linux.
 ---
 
 ## Overview
@@ -9,13 +9,54 @@ This is the monorepo for all the k8s infrastructure I currently manage. Currentl
 
 The goal is to automate pretty much everything, requiring as less manual intervention as possible. There is also strict focus on security by using networkpolicies, running modsec waf for first proxy servers, plan to host auth DNS in the near future, host hardening (strict selinux policies, linux-hardened kernel, disabling most of the kernel modules, etc), encrypted traffic everywhere, gvisor sandbox for most of the containers and lots of other minor tweaks.  
 
+The network flow for nebula:
+
+```
+HTTP client
+  │
+  ▼
+DNS round-robin (desec.io is the auth DNS provider)
+  │
+  │
+  └── OpenBSD servers x2 (pf firewall, DNS resolver)
+      ├── nginx proxy + ModSecurity WAF
+      ├── Anubis PoW captcha (planned)
+      └── Tailscale node
+            │
+            │  Tailscale mesh (100.64.0.0/10)
+            │  Headscale coordination server
+            │
+            ▼
+      ┌──────────────────────────┐
+      │ k3s cluster              │
+      │   ├── k3s-remote-01      │
+      │   ├── k3s-remote-02      │
+      │   └── k3s-remote-03      │
+      └──────────────────────────┘
+```
+
 The network flow for comet:
 
-GPON -> OpenWRT (acts as fw and does normal traffic filtering) -> Managed switch (TP-link-108GE) -> Multiple dumb APs (for wifi) -> k8s in it's own VLAN, untrusted devices in their own
-
-The network flow for nebula (tailscale mesh with headscale coordination server):
-
-HTTP client -> DNS round robin -> Two OpenBSD VPS act as a firewall ([pf](https://www.openbsd.org/faq/pf/)) + DNS resolver for all servers + nginx proxy with modsec WAF + anubis for PoW captcha (not deployed yet) -> nginx forwards the traffic to envoy-gateway inside the cluster which hits the appropriate HTTPRoute
+```
+Internet
+  │
+  ▼
+GPON fiber termination
+  │
+  ▼
+OpenWRT (firewall, traffic filtering)
+  │
+  ▼
+TP-Link TL-SG108E (managed switch)
+  │
+  ├── VLAN: k8s nodes
+  │     ├── k3s-01
+  │     ├── k3s-02
+  │     └── k3s-03
+  │
+  └── VLAN: untrusted devices
+        └── dumb APs → WiFi clients
+```
 
 ---
 
@@ -50,13 +91,13 @@ Flux does all the heavy lifting of syncing the resources from git repo and runs 
 
 Any top dir has two subdirs which specify the cluster name. Kustomization helps avoid duplication for deploying the same component across two clusters. 
 
-- **Cilium**: Provides network routing, network security, exposing apps via LoadBalancers and other networking functionality.
-- **nfs-csi**: Provides storage by provisioning PVCs with an NFS server.
-- **VolSync**: Provides and manages automated backups and restores of persistent storage.
-- **Flux**: Provides GitOps automation for syncing desired state of resources.
-- **external-dns**: Syncs DNS records against upstream resolvers' records, such as Cloudflare DNS.
-- **cert-manager**: Automated TLS management for generating and rotating signed and trusted TLS certificates stored as Kubernetes secrets.
-- **envoy-gateway**: Envoy gateway is the envoy's implementation of k8s Gateway API. It's mainly used for serving and exposing deployments to external clients.
-- **VictoriaMetrics**: Currently, using it's log stack for viewing and scraping cluster-wide logs.
-- **kube-prometheus-stack + prometheus-operator**: Automated configuration and service discovery for Prometheus (and thus VictoriaMetrics), with shipped defaults for Kubernetes-focused monitoring and alerting.
-- **system-upgrade-controller**: Auto-update of cluster k3s version.
+- **[Cilium](https://cilium.io)**: Network routing, network security, exposing apps via LoadBalancers and other networking functionality.
+- **[nfs-csi](https://github.com/kubernetes-csi/csi-driver-nfs)**: Provides storage by provisioning PVCs with an NFS server.
+- **[VolSync](https://volsync.readthedocs.io)**: Provides and manages automated backups and restores of persistent storage.
+- **[Flux CD](https://fluxcd.io)**: GitOps automation for syncing desired state of resources.
+- **[external-dns](https://github.com/kubernetes-sigs/external-dns)**: Syncs DNS records against upstream resolvers' records.
+- **[cert-manager](https://cert-manager.io)**: Automated TLS management for generating and rotating signed and trusted TLS certificates stored as Kubernetes secrets.
+- **[Envoy Gateway](https://gateway.envoyproxy.io)**: Envoy's implementation of the Kubernetes Gateway API. Used for serving and exposing deployments to external clients.
+- **[VictoriaMetrics](https://victoriametrics.com)**: Currently using its log stack for viewing and scraping cluster-wide logs.
+- **[kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)** + **[prometheus-operator](https://prometheus-operator.dev)**: Automated configuration and service discovery for Prometheus (and thus VictoriaMetrics), with shipped defaults for Kubernetes-focused monitoring and alerting.
+- **[system-upgrade-controller](https://github.com/rancher/system-upgrade-controller)**: Auto-update of cluster k3s version.
