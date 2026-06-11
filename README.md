@@ -1,7 +1,7 @@
 <div align="center">
 <h3>homelab infra (work-in-progress)</h3>
 
-Powered by Flux, Kubernetes, Cilium, Talos, OpenBSD and Linux.
+Powered by Flux, Kubernetes, Cilium, k3s, OpenBSD and Linux.
 </div>
 ---
 
