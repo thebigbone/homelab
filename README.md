@@ -1,6 +1,8 @@
-## homelab infra (work-in-progress)
+<div align="center">
+#### homelab infra (work-in-progress)
 
-### Powered by Flux, Kubernetes, Cilium, Talos, OpenBSD and Linux.
+Powered by Flux, Kubernetes, Cilium, Talos, OpenBSD and Linux.
+</div>
 ---
 
 ## Overview
