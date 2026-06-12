@@ -10,7 +10,7 @@ spec:
       name: envoy-gateway
       namespace: envoy-gateway-system
   hostnames:
-    - "aio.ext4.xyz"
+    - "debrid.ext4.xyz"
   rules:
     - backendRefs:
         - name: aio
