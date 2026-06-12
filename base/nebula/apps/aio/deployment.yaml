@@ -30,6 +30,8 @@ spec:
           env:
             - name: DATABASE_URI
               value: "sqlite://./data/db.sqlite"
+            - name: BASE_URL
+              value: "https://aio.ext4.xyz"
           volumeMounts:
             - mountPath: /app/data
               name: aio
