@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: aio
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: aio
+    spec:
+      serviceAccountName: aio
+      terminationGracePeriodSeconds: 5
+      nodeSelector:
+        kubernetes.io/hostname: k3s-remote-01
+      containers:
+        - name: aio
+          image: ghcr.io/viren070/aiostreams:v2.30.3@sha256:537e6a79c452b2951c6f5c4296b9976c61b84dd40ed8354ef587dd975f65d7b7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          envFrom:
+          - secretRef:
+              name: aio-env
+          env:
+            - name: DATABASE_URI
+              value: "sqlite://./data/db.sqlite"
+          volumeMounts:
+            - mountPath: /app/data
+              name: aio
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: aio
+          hostPath:
+            path: /var/lib/aio
+            type: DirectoryOrCreate
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault

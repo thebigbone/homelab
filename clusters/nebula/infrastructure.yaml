@@ -14,3 +14,7 @@ spec:
   path: ./infrastructure/nebula
   prune: true
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

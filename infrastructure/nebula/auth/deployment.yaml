@@ -18,7 +18,7 @@ spec:
         kubernetes.io/hostname: k3s-remote-01
       containers:
         - name: pocket-id
-          image: ghcr.io/pocket-id/pocket-id:v2
+          image: ghcr.io/pocket-id/pocket-id:v2.8@sha256:0028bb80c0170a22b6914bca7542a97956d174368521052e77b137fc9c9d7598
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1411

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aio
+  labels:
+    app.kubernetes.io/component: aio
+spec:
+  selector:
+    app.kubernetes.io/component: aio
+  ports:
+    - name: http
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
