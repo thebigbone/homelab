@@ -12,3 +12,6 @@ resources:
 
 commonLabels:
   app.kubernetes.io/component: aio
+
+components:
+  - ../../../../shared/components/gvisor

@@ -12,3 +12,6 @@ resources:
 
 commonLabels:
   app.kubernetes.io/component: pocket-id
+
+components:
+  - ../../../../shared/components/gvisor
