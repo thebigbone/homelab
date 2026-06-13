@@ -26,6 +26,10 @@ data:
         - "[STATUS] == 200"
         - "[CONNECTED] == true"
 
+    default-network: &network
+      group: network
+      interval: 5s
+
     default-dns: &dns
       group: dns
       interval: 5s
@@ -54,9 +58,35 @@ data:
 
       # --- Envoy Gateway control plane ---
       - name: envoy-gateway-cp
-        group: envoy
+        group: network
         interval: 5s
         url: http://envoy-gateway.envoy-gateway-system.svc.cluster.local:19001/ready
+        conditions:
+          - "[STATUS] == 404"
+          - "[CONNECTED] == true"
+
+      # --- nginx ---
+      - name: nginx-01
+        group: network
+        interval: 30s
+        url: tcp://45.142.115.95:80
+        conditions:
+          - "[RESPONSE_TIME] < 500"
+          - "[CONNECTED] == true"
+
+      - name: nginx-02
+        group: network
+        interval: 30s
+        url: tcp://37.114.48.80:80
+        conditions:
+          - "[RESPONSE_TIME] < 500"
+          - "[CONNECTED] == true"
+
+      # --- headscale ---
+      - name: headscale
+        group: network
+        interval: 30s
+        url: https://hs.ext4.xyz
         conditions:
           - "[STATUS] == 404"
           - "[CONNECTED] == true"
@@ -162,22 +192,6 @@ data:
         conditions:
           - "[CONNECTED] == true"
 
-      # --- nginx ---
-      - name: nginx-01
-        group: nodes
-        interval: 30s
-        url: tcp://45.142.115.95:80
-        conditions:
-          - "[RESPONSE_TIME] < 500"
-          - "[CONNECTED] == true"
-
-      - name: nginx-02
-        group: nodes
-        interval: 30s
-        url: tcp://37.114.48.80:80
-        conditions:
-          - "[RESPONSE_TIME] < 500"
-          - "[CONNECTED] == true"
       
       # --- Certificate expiry for all domains ---
       - name: cert-gatus
