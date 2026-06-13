@@ -1,0 +1,218 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gatus
+data:
+  config.yaml: |
+    metrics: true
+
+    default-flux: &flux
+      group: flux
+      interval: 5s
+      conditions:
+        - "[STATUS] == 200"
+        - "[CONNECTED] == true"
+
+    default-envoy: &envoy
+      group: envoy
+      interval: 5s
+      conditions:
+        - "[STATUS] == 200"
+        - "[CONNECTED] == true"
+
+    default-monitoring: &monitoring
+      group: monitoring
+      interval: 5s
+      conditions:
+        - "[STATUS] == 200"
+        - "[CONNECTED] == true"
+
+    default-dns: &dns
+      group: dns
+      interval: 5s
+      dns:
+        query-name: "gatus.ext4.xyz"
+        query-type: "A"
+      conditions:
+        - "[BODY] == 37.114.48.80"
+        - "[DNS_RCODE] == NOERROR"
+
+    endpoints:
+
+      # --- Flux ---
+      - name: notification-controller
+        <<: *flux
+        url: http://notification-controller.flux-system.svc.cluster.local:80
+
+      - name: source-controller
+        <<: *flux
+        url: http://source-controller.flux-system.svc.cluster.local:80
+
+      - name: webhook-receiver
+        <<: *flux
+        url: http://webhook-receiver.flux-system.svc.cluster.local:80
+
+      # --- DNS ---
+      - name: kube-dns
+        <<: *dns
+        url: kube-dns.kube-system.svc.cluster.local:53
+
+      # --- Envoy Gateway ---
+      - name: envoy-gateway-controlplane
+        group: envoy
+        url: http://envoy-gateway.envoy-gateway-system.svc.cluster.local:19001
+        interval: 5s
+        conditions:
+          - "[STATUS] == 404"
+          - "[CONNECTED] == true"
+
+      # --- Monitoring Stack ---
+      - name: prometheus
+        <<: *monitoring
+        url: http://kube-prometheus-stack-prometheus.monitoring-system.svc.cluster.local:9090/-/healthy
+
+      - name: alertmanager
+        <<: *monitoring
+        url: http://kube-prometheus-stack-alertmanager.monitoring-system.svc.cluster.local:9093/-/healthy
+
+      - name: grafana
+        <<: *monitoring
+        url: http://kube-prometheus-stack-grafana.monitoring-system.svc.cluster.local:80/api/health
+
+      - name: kube-state-metrics
+        <<: *monitoring
+        url: http://kube-prometheus-stack-kube-state-metrics.monitoring-system.svc.cluster.local:8080/healthz
+
+      - name: prometheus-operator
+        <<: *monitoring
+        url: https://kube-prometheus-stack-operator.monitoring-system.svc.cluster.local:443/healthz
+        client:
+          insecure: true
+
+      - name: node-exporter
+        <<: *monitoring
+        url: http://kube-prometheus-stack-prometheus-node-exporter.monitoring-system.svc.cluster.local:9100/metrics
+
+      # --- Victoria Logs ---
+      - name: victoria-logs-vmauth
+        group: logging
+        interval: 5s
+        url: http://logging-stack-victoria-logs-cluster-vmauth.logging-system.svc.cluster.local:8427/health
+        conditions:
+          - "[STATUS] == 200"
+          - "[CONNECTED] == true"
+
+      - name: victoria-logs-vlselect
+        group: logging
+        interval: 5s
+        url: http://logging-stack-victoria-logs-cluster-vlselect.logging-system.svc.cluster.local:9471/health
+        conditions:
+          - "[STATUS] == 200"
+          - "[CONNECTED] == true"
+
+      - name: victoria-logs-vlinsert
+        group: logging
+        interval: 5s
+        url: http://logging-stack-victoria-logs-cluster-vlinsert.logging-system.svc.cluster.local:9481/health
+        conditions:
+          - "[STATUS] == 200"
+          - "[CONNECTED] == true"
+
+      # --- Cilium ---
+      - name: hubble-relay
+        group: networking
+        interval: 5s
+        url: http://hubble-relay.kube-system.svc.cluster.local:80/healthz
+        conditions:
+          - "[STATUS] == 200"
+          - "[CONNECTED] == true"
+
+      # --- Apps ---
+      - name: pocket-id
+        group: apps
+        interval: 1m
+        url: http://pocket-id.auth.svc.cluster.local:80
+        conditions:
+          - "[STATUS] == 200"
+          - "[CONNECTED] == true"
+
+      - name: aio
+        group: apps
+        interval: 5m
+        url: http://aio.external-apps.svc.cluster.local:3000
+        conditions:
+          - "[STATUS] == 200"
+          - "[CONNECTED] == true"
+
+      # --- External ---
+      - name: git
+        group: external
+        url: https://git.ext4.xyz
+        interval: 5m
+        conditions:
+          - "[STATUS] == 200"
+          - "[CONNECTED] == true"
+
+      - name: gatus
+        group: external
+        url: https://gatus.ext4.xyz
+        interval: 5m
+        conditions:
+          - "[STATUS] == 200"
+          - "[CONNECTED] == true"
+
+      # --- ICMP ping to nodes ---
+      - name: k3s-remote-01
+        group: nodes
+        interval: 30s
+        url: icmp://100.64.0.1
+        conditions:
+          - "[CONNECTED] == true"
+      
+      - name: k3s-remote-02
+        group: nodes
+        interval: 30s
+        url: icmp://100.64.0.2
+        conditions:
+          - "[CONNECTED] == true"
+
+      # --- nginx ---
+      - name: nginx-01
+        group: nodes
+        interval: 30s
+        url: tcp://45.142.115.95:80
+        conditions:
+          - "[STATUS] == 200"
+          - "[RESPONSE_TIME] < 500"
+          - "[CONNECTED] == true"
+
+      - name: nginx-02
+        group: nodes
+        interval: 30s
+        url: tcp://37.114.48.80:80
+        conditions:
+          - "[STATUS] == 200"
+          - "[RESPONSE_TIME] < 500"
+          - "[CONNECTED] == true"
+      
+      # --- Certificate expiry for all domains ---
+      - name: cert-gatus
+        group: certs
+        interval: 24h
+        url: https://gatus.ext4.xyz
+        conditions:
+          - "[CERTIFICATE_EXPIRATION] > 48h"
+      
+      - name: cert-grafana
+        group: certs
+        interval: 24h
+        url: https://grafana.ext4.xyz
+        conditions:
+          - "[CERTIFICATE_EXPIRATION] > 48h"
+      
+      - name: cert-id
+        group: certs
+        interval: 24h
+        url: https://id.ext4.xyz
+        conditions:
+          - "[CERTIFICATE_EXPIRATION] > 48h" 

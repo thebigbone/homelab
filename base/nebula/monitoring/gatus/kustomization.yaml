@@ -6,7 +6,6 @@ namespace: monitoring
 resources:
   - ../../../comet/monitoring/gatus/deployment.yaml
   - ../../../comet/monitoring/gatus/service.yaml
-  - ../../../comet/monitoring/gatus/config.yaml
   - ../../../comet/monitoring/gatus/sa.yaml
   - ../../../comet/monitoring/gatus/namespace.yaml
   - ../../../../netpols/deny-by-default-ingress.yaml
@@ -14,7 +13,7 @@ resources:
   - ../../../comet/monitoring/gatus/allow-dns-gatus.yaml
   - ../../../comet/monitoring/gatus/allow-egress-internet.yaml
   - ../../../comet/monitoring/gatus/routes
-  - auth.yaml
+  - config.yaml
 
 components:
   - ../../../../shared/components/gvisor
