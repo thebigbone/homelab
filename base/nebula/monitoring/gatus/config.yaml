@@ -10,7 +10,6 @@ data:
       group: flux
       interval: 5s
       conditions:
-        - "[STATUS] == 200"
         - "[CONNECTED] == true"
 
     default-envoy: &envoy
@@ -44,10 +43,6 @@ data:
         <<: *flux
         url: http://notification-controller.flux-system.svc.cluster.local:80
 
-      - name: source-controller
-        <<: *flux
-        url: http://source-controller.flux-system.svc.cluster.local:80
-
       - name: webhook-receiver
         <<: *flux
         url: http://webhook-receiver.flux-system.svc.cluster.local:80
@@ -57,16 +52,16 @@ data:
         <<: *dns
         url: kube-dns.kube-system.svc.cluster.local:53
 
-      # --- Envoy Gateway ---
-      - name: envoy-gateway-controlplane
+      # --- Envoy Gateway control plane ---
+      - name: envoy-gateway-cp
         group: envoy
-        url: http://envoy-gateway.envoy-gateway-system.svc.cluster.local:19001
         interval: 5s
+        url: http://envoy-gateway.envoy-gateway-system.svc.cluster.local:19001/ready
         conditions:
           - "[STATUS] == 404"
           - "[CONNECTED] == true"
 
-      # --- Monitoring Stack ---
+      # --- Prometheus Stack ---
       - name: prometheus
         <<: *monitoring
         url: http://kube-prometheus-stack-prometheus.monitoring-system.svc.cluster.local:9090/-/healthy
@@ -94,7 +89,7 @@ data:
         url: http://kube-prometheus-stack-prometheus-node-exporter.monitoring-system.svc.cluster.local:9100/metrics
 
       # --- Victoria Logs ---
-      - name: victoria-logs-vmauth
+      - name: vl-vmauth
         group: logging
         interval: 5s
         url: http://logging-stack-victoria-logs-cluster-vmauth.logging-system.svc.cluster.local:8427/health
@@ -102,7 +97,7 @@ data:
           - "[STATUS] == 200"
           - "[CONNECTED] == true"
 
-      - name: victoria-logs-vlselect
+      - name: vl-vlselect
         group: logging
         interval: 5s
         url: http://logging-stack-victoria-logs-cluster-vlselect.logging-system.svc.cluster.local:9471/health
@@ -110,19 +105,10 @@ data:
           - "[STATUS] == 200"
           - "[CONNECTED] == true"
 
-      - name: victoria-logs-vlinsert
+      - name: vl-vlinsert
         group: logging
         interval: 5s
         url: http://logging-stack-victoria-logs-cluster-vlinsert.logging-system.svc.cluster.local:9481/health
-        conditions:
-          - "[STATUS] == 200"
-          - "[CONNECTED] == true"
-
-      # --- Cilium ---
-      - name: hubble-relay
-        group: networking
-        interval: 5s
-        url: http://hubble-relay.kube-system.svc.cluster.local:80/healthz
         conditions:
           - "[STATUS] == 200"
           - "[CONNECTED] == true"
@@ -155,7 +141,7 @@ data:
 
       - name: gatus
         group: external
-        url: https://gatus.ext4.xyz
+        url: https://uptime.ext4.xyz
         interval: 5m
         conditions:
           - "[STATUS] == 200"
@@ -182,7 +168,6 @@ data:
         interval: 30s
         url: tcp://45.142.115.95:80
         conditions:
-          - "[STATUS] == 200"
           - "[RESPONSE_TIME] < 500"
           - "[CONNECTED] == true"
 
@@ -191,7 +176,6 @@ data:
         interval: 30s
         url: tcp://37.114.48.80:80
         conditions:
-          - "[STATUS] == 200"
           - "[RESPONSE_TIME] < 500"
           - "[CONNECTED] == true"
       

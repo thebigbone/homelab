@@ -8,15 +8,8 @@ resources:
   - ../../../comet/monitoring/gatus/service.yaml
   - ../../../comet/monitoring/gatus/sa.yaml
   - ../../../comet/monitoring/gatus/namespace.yaml
-  - ../../../../netpols/deny-by-default-ingress.yaml
-  - ../../../../netpols/allow-envoy-ingress.yaml
-  - ../../../comet/monitoring/gatus/allow-dns-gatus.yaml
-  - ../../../comet/monitoring/gatus/allow-egress-internet.yaml
   - ../../../comet/monitoring/gatus/routes
   - config.yaml
-
-components:
-  - ../../../../shared/components/gvisor
 
 patches:
   - target:
