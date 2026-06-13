@@ -88,7 +88,7 @@ data:
         interval: 30s
         url: https://hs.ext4.xyz
         conditions:
-          - "[STATUS] == 404"
+          - "[STATUS] == 200"
           - "[CONNECTED] == true"
 
       # --- Prometheus Stack ---
