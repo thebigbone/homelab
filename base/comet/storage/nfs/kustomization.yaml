@@ -18,6 +18,24 @@ commonLabels:
 patches:
   - target:
       kind: NetworkPolicy
+      name: default-deny-egress
+    patch: |-
+      - op: add
+        path: /spec/podSelector
+        value:
+          matchLabels:
+            app.kubernetes.io/name: csi-driver-nfs
+  - target:
+      kind: NetworkPolicy
+      name: default-deny-ingress
+    patch: |-
+      - op: add
+        path: /spec/podSelector
+        value:
+          matchLabels:
+            app.kubernetes.io/name: csi-driver-nfs
+  - target:
+      kind: NetworkPolicy
       name: allow-from-gatus
     patch: |-
       - op: add
