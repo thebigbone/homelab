@@ -9,6 +9,10 @@ resources:
   - ../../../comet/monitoring/gatus/sa.yaml
   - ../../../comet/monitoring/gatus/namespace.yaml
   - ../../../comet/monitoring/gatus/routes
+  - ../../../../netpols/deny-by-default-ingress.yaml
+  - ../../../../netpols/allow-envoy-ingress.yaml
+  - ../../../../netpols/allow-egress-internet.yaml
+  - ../../../comet/monitoring/gatus/allow-dns-egress.yaml
   - config.yaml
 
 patches:
@@ -21,3 +25,22 @@ patches:
       - op: replace
         path: /spec/hostnames/0
         value: "uptime.ext4.xyz"
+  - target:
+      kind: NetworkPolicy
+      name: allow-from-gateway
+    patch: |-
+      - op: add
+        path: /spec/podSelector
+        value:
+          matchLabels:
+            app.kubernetes.io/component: gatus
+  - target:
+      kind: NetworkPolicy
+      name: allow-egress-internet
+    patch: |-
+      - op: add
+        path: /spec/podSelector
+        value:
+          matchLabels:
+            app.kubernetes.io/component: gatus
+

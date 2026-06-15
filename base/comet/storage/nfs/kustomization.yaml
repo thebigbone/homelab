@@ -6,6 +6,31 @@ namespace: kube-system
 resources:
   - release.yaml
   - storageclass.yaml
+  - ../../../../netpols/deny-by-default-egress.yaml
+  - ../../../../netpols/deny-by-default-ingress.yaml
+  - ../../../../netpols/allow-gatus-ingress.yaml
+  - ../../../../netpols/allow-dns-egress.yaml
+  - allow-nfs-egress.yaml
 
 commonLabels:
-  app.kubernetes.io/name: nfs-csi
+  app.kubernetes.io/component: nfs-csi
+
+patches:
+  - target:
+      kind: NetworkPolicy
+      name: allow-from-gatus
+    patch: |-
+      - op: add
+        path: /spec/podSelector
+        value:
+          matchLabels:
+            app.kubernetes.io/name: csi-driver-nfs
+  - target:
+      kind: NetworkPolicy
+      name: allow-dns-egress
+    patch: |-
+      - op: add
+        path: /spec/podSelector
+        value:
+          matchLabels:
+            app.kubernetes.io/name: csi-driver-nfs
