@@ -30,7 +30,7 @@ patches:
       name: allow-nfs-egress
     patch: |-
       - op: replace
-        path: /spec/egress/to/ipBlock/cidr
+        path: /spec/egress/0/to/0/ipBlock/cidr
         value: 100.64.0.0/16
   - target:
       kind: NetworkPolicy
