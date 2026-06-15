@@ -11,8 +11,6 @@ resources:
   - namespace.yaml
   - ../../../../netpols/deny-by-default-ingress.yaml
   - ../../../../netpols/allow-envoy-ingress.yaml
-  - ../../../../netpols/allow-egress-internet.yaml
-  - ../../../../netpols/allow-dns-egress.yaml
   - ./routes
   - servicemonitor.yaml
 
@@ -23,24 +21,6 @@ patches:
   - target:
       kind: NetworkPolicy
       name: allow-from-gateway
-    patch: |-
-      - op: add
-        path: /spec/podSelector
-        value:
-          matchLabels:
-            app.kubernetes.io/component: gatus
-  - target:
-      kind: NetworkPolicy
-      name: allow-dns-egress
-    patch: |-
-      - op: add
-        path: /spec/podSelector
-        value:
-          matchLabels:
-            app.kubernetes.io/component: gatus
-  - target:
-      kind: NetworkPolicy
-      name: allow-egress-internet
     patch: |-
       - op: add
         path: /spec/podSelector
