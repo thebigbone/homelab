@@ -6,11 +6,11 @@ namespace: kube-system
 resources:
   - ../../../comet/storage/nfs/release.yaml
   - ../../../comet/storage/nfs/storageclass.yaml
-  - ../../../../netpols/deny-by-default-egress.yaml
-  - ../../../../netpols/deny-by-default-ingress.yaml
-  - ../../../../netpols/allow-gatus-ingress.yaml
-  - ../../../../netpols/allow-dns-egress.yaml
-  - ../../../comet/storage/nfs/allow-nfs-egress.yaml
+    #- ../../../../netpols/deny-by-default-egress.yaml
+    #- ../../../../netpols/deny-by-default-ingress.yaml
+    #- ../../../../netpols/allow-gatus-ingress.yaml
+    #- ../../../../netpols/allow-dns-egress.yaml
+    #- ../../../comet/storage/nfs/allow-nfs-egress.yaml
 
 commonLabels:
   app.kubernetes.io/component: nfs-csi
@@ -25,47 +25,47 @@ patches:
       - op: replace
         path: /parameters/server
         value: 100.64.0.3
-  - target:
-      kind: NetworkPolicy
-      name: default-deny-egress
-    patch: |-
-      - op: add
-        path: /spec/podSelector
-        value:
-          matchLabels:
-            app.kubernetes.io/name: csi-driver-nfs
-  - target:
-      kind: NetworkPolicy
-      name: default-deny-ingress
-    patch: |-
-      - op: add
-        path: /spec/podSelector
-        value:
-          matchLabels:
-            app.kubernetes.io/name: csi-driver-nfs
-  - target:
-      kind: NetworkPolicy
-      name: allow-nfs-egress
-    patch: |-
-      - op: replace
-        path: /spec/egress/0/to/0/ipBlock/cidr
-        value: 100.64.0.0/16
-  - target:
-      kind: NetworkPolicy
-      name: allow-from-gatus
-    patch: |-
-      - op: add
-        path: /spec/podSelector
-        value:
-          matchLabels:
-            app.kubernetes.io/name: csi-driver-nfs
-  - target:
-      kind: NetworkPolicy
-      name: allow-dns-egress
-    patch: |-
-      - op: add
-        path: /spec/podSelector
-        value:
-          matchLabels:
-            app.kubernetes.io/name: csi-driver-nfs
-
+          #  - target:
+          #      kind: NetworkPolicy
+          #      name: default-deny-egress
+          #    patch: |-
+          #      - op: add
+          #        path: /spec/podSelector
+          #        value:
+          #          matchLabels:
+          #            app.kubernetes.io/name: csi-driver-nfs
+          #  - target:
+          #      kind: NetworkPolicy
+          #      name: default-deny-ingress
+          #    patch: |-
+          #      - op: add
+          #        path: /spec/podSelector
+          #        value:
+          #          matchLabels:
+          #            app.kubernetes.io/name: csi-driver-nfs
+          #  - target:
+          #      kind: NetworkPolicy
+          #      name: allow-nfs-egress
+          #    patch: |-
+          #      - op: replace
+          #        path: /spec/egress/0/to/0/ipBlock/cidr
+          #        value: 100.64.0.0/16
+          #  - target:
+          #      kind: NetworkPolicy
+          #      name: allow-from-gatus
+          #    patch: |-
+          #      - op: add
+          #        path: /spec/podSelector
+          #        value:
+          #          matchLabels:
+          #            app.kubernetes.io/name: csi-driver-nfs
+          #  - target:
+          #      kind: NetworkPolicy
+          #      name: allow-dns-egress
+          #    patch: |-
+          #      - op: add
+          #        path: /spec/podSelector
+          #        value:
+          #          matchLabels:
+          #            app.kubernetes.io/name: csi-driver-nfs
+          #
