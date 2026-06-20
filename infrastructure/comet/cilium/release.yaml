@@ -13,7 +13,7 @@ spec:
         name: cilium-charts
         namespace: kube-system
       # renovate: datasource=helm depName=cilium registryUrl=https://helm.cilium.io/
-      version: 1.19.5
+      version: 1.19.4
   interval: 5m
   install:
     crds: Create
