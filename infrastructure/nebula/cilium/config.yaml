@@ -20,8 +20,3 @@ data:
         - http
       relay:
         enabled: true
-    encryption:
-      enabled: true
-      type: wireguard
-      wireguard:
-        userspaceFallback: false
