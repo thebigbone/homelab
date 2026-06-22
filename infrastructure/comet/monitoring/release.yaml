@@ -96,13 +96,14 @@ data:
         darwin:
           enabled: false
     prometheusOperator:
+      tls:
+        enabled: false
       tlsProxy:
         enabled: false
       enabled: true
       networkPolicy:
         enabled: true
       admissionWebhooks:
-        failurePolicy: Fail
         enabled: false
         patch:
           enabled: false
