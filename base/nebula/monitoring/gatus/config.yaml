@@ -181,14 +181,14 @@ data:
       - name: k3s-remote-01
         group: nodes
         interval: 30s
-        url: icmp://100.64.0.1
+        url: icmp://100.64.0.11
         conditions:
           - "[CONNECTED] == true"
       
       - name: k3s-remote-02
         group: nodes
         interval: 30s
-        url: icmp://100.64.0.2
+        url: icmp://100.64.0.12
         conditions:
           - "[CONNECTED] == true"
 

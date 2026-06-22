@@ -22,6 +22,6 @@ patches:
         path: /spec/addresses
         value:
           - type: IPAddress
-            value: "100.64.0.1"
+            value: "100.64.0.11"
           - type: IPAddress
-            value: "100.64.0.2"
+            value: "100.64.0.12"
