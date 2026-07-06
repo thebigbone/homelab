@@ -86,18 +86,16 @@ data:
       - name: dn42-01
         group: network
         interval: 30s
-        url: tcp://217.217.243.71
+        url: tcp://217.217.243.71:80
         conditions:
           - "[RESPONSE_TIME] < 500"
-          - "[CONNECTED] == true"
 
       - name: dn42-02
         group: network
         interval: 30s
-        url: tcp://217.217.243.70
+        url: tcp://217.217.243.70:80
         conditions:
           - "[RESPONSE_TIME] < 500"
-          - "[CONNECTED] == true"
 
       # --- headscale ---
       - name: headscale
