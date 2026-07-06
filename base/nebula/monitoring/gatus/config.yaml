@@ -82,6 +82,23 @@ data:
           - "[RESPONSE_TIME] < 500"
           - "[CONNECTED] == true"
 
+      # -- dn42 nodes ---
+      - name: dn42-01
+        group: network
+        interval: 30s
+        url: tcp://217.217.243.71
+        conditions:
+          - "[RESPONSE_TIME] < 500"
+          - "[CONNECTED] == true"
+
+      - name: dn42-02
+        group: network
+        interval: 30s
+        url: tcp://217.217.243.70
+        conditions:
+          - "[RESPONSE_TIME] < 500"
+          - "[CONNECTED] == true"
+
       # --- headscale ---
       - name: headscale
         group: network
@@ -194,13 +211,6 @@ data:
 
       
       # --- Certificate expiry for all domains ---
-      - name: cert-gatus
-        group: certs
-        interval: 24h
-        url: https://gatus.ext4.xyz
-        conditions:
-          - "[CERTIFICATE_EXPIRATION] > 48h"
-      
       - name: cert-grafana
         group: certs
         interval: 24h
@@ -214,3 +224,10 @@ data:
         url: https://id.ext4.xyz
         conditions:
           - "[CERTIFICATE_EXPIRATION] > 48h" 
+
+      - name: cert-debrid
+        group: certs
+        interval: 24h
+        url: https://debrid.ext4.xyz
+        conditions:
+          - "[CERTIFICATE_EXPIRATION] > 48h"
